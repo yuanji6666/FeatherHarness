@@ -3,10 +3,11 @@ from typing import Annotated, TypedDict
 
 from langgraph.graph import END, START, StateGraph
 from langchain_openai import ChatOpenAI
-from langchain.tools import tool
 from langchain.messages import AIMessage, AnyMessage, HumanMessage, SystemMessage, ToolMessage
 from dotenv import load_dotenv
 import os
+
+from tool import GetToolRegistery
 
 load_dotenv()
 
@@ -20,19 +21,10 @@ graph = StateGraph(State)
 chatModel = ChatOpenAI(base_url=os.getenv("OPENAI_BASE_URL") or "https://api.qnaigc.com/v1",
                     model=os.getenv("OPENAI_MODEL_NAME") or "z-ai/glm-5")
 
-
-@tool
-def get_user_info() -> str:
-    """这个工具可以用来获得用户的个人信息
-    """
-    return "我叫小源，今年19岁，在武汉大学大学计算机学院读大二"
-
-tools = [get_user_info]
-
-tool_registery = {tool.name: tool for tool in tools}
-
+tool_registery = GetToolRegistery()
+tools = [tool_ for tool_ in tool_registery.values()]
 def llm_call(state: State):
-    model = chatModel.bind_tools([get_user_info])
+    model = chatModel.bind_tools(tools)
     AImessage = model.invoke([SystemMessage("你是一个可以调用工具的智能助手，如果需要工具，请调用")]+state['messages'])
 
     AImessage.pretty_print()
@@ -83,10 +75,9 @@ graph.add_edge('tool_node', 'llm_call')
 agent = graph.compile()
 
 if __name__ == '__main__':
-    from IPython.display import Image, display
-    display(Image(agent.get_graph(xray=True).draw_mermaid_png()))
-    
-    state = agent.invoke(State(messages=[HumanMessage(content='你知道我多少岁吗？')], turn_count=0, transition_reason=''))
+    userInput = input("请输入问题：")
+
+    state = agent.invoke(State(messages=[HumanMessage(content=userInput)], turn_count=0, transition_reason=''))
 
     for m in state['messages']:
         m.pretty_print()
