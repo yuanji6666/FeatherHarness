@@ -1,0 +1,16 @@
+from langchain_openai import ChatOpenAI
+from langchain.chat_models import BaseChatModel
+
+import os
+
+
+def create_chat_model(
+    model_name: str | None = None
+) -> BaseChatModel:
+    return ChatOpenAI(
+        base_url=os.getenv("OPENAI_BASE_URL") or "https://api.qnaigc.com/v1",
+        model=model_name or os.getenv("OPENAI_MODEL_NAME") or "xiaomi/mimo-v2-flash",
+        streaming=True
+        
+    )
+

@@ -1,31 +1,30 @@
-import operator
-from typing import Annotated, TypedDict
-
+from langchain.messages import AnyMessage, HumanMessage, SystemMessage, ToolMessage, AIMessage
 from langgraph.graph import END, START, StateGraph
-from langchain_openai import ChatOpenAI
-from langchain.messages import AIMessage, AnyMessage, HumanMessage, SystemMessage, ToolMessage
-from dotenv import load_dotenv
-import os
 
-from tool import GetToolRegistery
+from model import create_chat_model
 
-load_dotenv()
+from typing import Annotated, TypedDict
+import operator
 
-class State(TypedDict):
+
+class SubAgentState(TypedDict):
     messages: Annotated[list[AnyMessage], operator.add]
     turn_count: int
-    transition_reason: str
 
-graph = StateGraph(State)
+graph = StateGraph(SubAgentState)
 
-chatModel = ChatOpenAI(base_url=os.getenv("OPENAI_BASE_URL") or "https://api.qnaigc.com/v1",
-                    model=os.getenv("OPENAI_MODEL_NAME") or "z-ai/glm-5")
+from tools import GetToolRegistery
 
 tool_registery = GetToolRegistery()
-tools = [tool_ for tool_ in tool_registery.values()]
-def llm_call(state: State):
+tools = list(tool_registery.values())
+
+
+chatModel = create_chat_model()
+def llm_call(state: SubAgentState):
     model = chatModel.bind_tools(tools)
-    AImessage = model.invoke([SystemMessage("你是一个可以调用工具的智能助手，如果需要工具，请调用")]+state['messages'])
+    AImessage = model.invoke(input=
+        [SystemMessage("you are a smart agent with tool calling ability,you should compelete the tasks assigned to you")]+state['messages']
+        )
 
     AImessage.pretty_print()
     
@@ -36,7 +35,7 @@ def llm_call(state: State):
     }
 
 
-def tool_node(state: State):
+def tool_node(state: SubAgentState):
     result = []
     
     lastMessage = state['messages'][-1]
@@ -46,11 +45,14 @@ def tool_node(state: State):
             if tool_call['name'] in tool_registery:
                 tool = tool_registery[tool_call['name']]
                 observation = tool.invoke(tool_call["args"])
-                result.append(ToolMessage(content=observation, tool_call_id=tool_call['id']))
+                tool_message = ToolMessage(content=observation, tool_call_id=tool_call['id'])
+                tool_message.pretty_print()
+                result.append(tool_message)
+
 
     return {"messages": result}
 
-def should_continue(state: State):
+def should_continue(state: SubAgentState):
     lastMessage = state['messages'][-1]
 
     if not isinstance(lastMessage, AIMessage):
@@ -72,18 +74,8 @@ graph.add_conditional_edges(
 )
 graph.add_edge('tool_node', 'llm_call')
 
-agent = graph.compile()
-
-if __name__ == '__main__':
-    userInput = input("请输入问题：")
-
-    state = agent.invoke(State(messages=[HumanMessage(content=userInput)], turn_count=0, transition_reason=''))
-
-    for m in state['messages']:
-        m.pretty_print()
+_subagent = graph.compile()
 
 
-
-
-
-
+def get_subagent():
+    return _subagent
