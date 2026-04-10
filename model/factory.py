@@ -8,7 +8,7 @@ def create_chat_model(
     model_name: str | None = None
 ) -> BaseChatModel:
     limiter = InMemoryRateLimiter(
-        requests_per_second=0.2
+        requests_per_second=1
     )
 
     return ChatOpenAI(
