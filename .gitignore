@@ -11,3 +11,6 @@ wheels/
 
 .env
 
+.DS_Store
+
+/能力测试
