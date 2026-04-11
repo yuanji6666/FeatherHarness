@@ -3,7 +3,6 @@ from langchain.chat_models import BaseChatModel
 from langchain_core.rate_limiters import InMemoryRateLimiter
 import os
 
-
 def create_chat_model(
     model_name: str | None = None
 ) -> BaseChatModel:
