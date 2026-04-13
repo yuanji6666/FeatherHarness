@@ -23,5 +23,3 @@ def read_file(file_path: str, limit: int = 0, offset: int = 0):
     return ''.join(lines)
 
 
-if __name__ == '__main__':
-    print(read_file.invoke("test.txt"))

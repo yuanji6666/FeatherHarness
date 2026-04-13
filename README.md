@@ -41,6 +41,9 @@ Harness有（马的）挽具，马具的意思，可以把LLM看作系统中一�
 ├── subagent/           # 子代理模块目录
 │   ├── __init__.py     # subagent 包初始化
 │   └── subagent.py     # 子代理实现，处理具体任务执行
+├── middleware/         # 中间件模块目录
+│   ├── __init__.py     # middleware 包初始化
+│   └── summarization.py # 摘要处理中间件
 ├── tools/              # 工具系统核心模块目录
 │   ├── __init__.py     # tool 包初始化
 │   ├── tool.py         # 工具基类/核心实现
@@ -56,9 +59,11 @@ Harness有（马的）挽具，马具的意思，可以把LLM看作系统中一�
 │   ├── __init__.py     # skill 包初始化
 │   ├── skill.py        # Skill 基础定义
 │   └── loader.py       # Skill 加载器，实现动态加载和执行
-└── skills/             # Skill 集合目录
-    └── academic-paper-review/  # 学术论文审查技能
-        └── SKILL.md    # Skill 定义文件
+├── skills/             # Skill 集合目录
+│   └── academic-paper-review/  # 学术论文审查技能
+│       └── SKILL.md    # Skill 定义文件
+└── surprise_output/    # 惊喜输出目录
+    └── wish-pool.html  # 愿望池页面
 ```
 
 ### 目录说明
@@ -70,11 +75,13 @@ Harness有（马的）挽具，马具的意思，可以把LLM看作系统中一�
 | `agent/` | Agent 核心模块，包含主任务代理和协调逻辑 |
 | `model/` | LLM模型工厂，统一管理大语言模型的创建和配置 |
 | `subagent/` | 子代理模块，处理具体的任务执行和分解 |
+| `middleware/` | 中间件模块，提供请求/响应的预处理和后处理功能 |
 | `tools/` | 工具系统核心，提供基础功能工具集 |
 | `tools/builtin/` | 内置工具集合，包括命令行、任务分配和网络搜索等基础功能 |
 | `tools/mcp/` | MCP 客户端模块，支持 Model Context Protocol |
 | `skill/` | Skill 加载器模块，负责动态加载和执行技能 |
 | `skills/` | Skill 集合目录，包含可复用的技能模块 |
+| `surprise_output/` | 惊喜输出目录，包含一些有趣的实验性功能 |
 
 ### 主要特性
 
@@ -85,3 +92,4 @@ Harness有（马的）挽具，马具的意思，可以把LLM看作系统中一�
 - **环境隔离**: 使用 .venv 虚拟环境，保证依赖管理清晰
 - **MCP支持**: 集成 Model Context Protocol 协议
 - **Skill系统**: 可插拔的领域能力模块，支持专业化任务处理
+- **中间件支持**: 提供请求/响应的预处理和后处理管道

@@ -1,6 +1,7 @@
 from langchain.agents import create_agent
 from langgraph.checkpoint.memory import MemorySaver
 
+from middleware.summarization import get_summarization_middleware
 from model.factory import create_chat_model
 from tools import GetToolRegistery
 
@@ -11,7 +12,8 @@ def create_lead_agent():
         model = create_chat_model(),
         tools = [tool for tool in GetToolRegistery(enable_task_tools=True).values()],     
         checkpointer=memory,
-        system_prompt=get_system_prompt()
+        system_prompt=get_system_prompt(),
+        middleware=[get_summarization_middleware()]
     )
     
     return leader

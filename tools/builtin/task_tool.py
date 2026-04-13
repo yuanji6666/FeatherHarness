@@ -8,7 +8,6 @@ def task_tool(task_description: str):
     subagent = get_subagent()
     result = subagent.invoke({
         'messages': [HumanMessage(content=task_description)],
-        'turn_count': 0
     })
 
     return result['messages'][-1].content

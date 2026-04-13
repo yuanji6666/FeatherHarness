@@ -89,4 +89,3 @@ def run_bash(command: str):
 
 if __name__ == '__main__':
     print(run_bash.invoke("ls ~"))
-    print(run_bash.invoke("rm -rf /"))
