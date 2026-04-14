@@ -7,7 +7,6 @@ from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 import os
 import asyncio
 
-load_dotenv()
 
 
 agent_state = AgentState(messages=[])
@@ -35,4 +34,5 @@ async def main():
 
 
 if __name__ == '__main__':
+    load_dotenv()
     asyncio.run(main())
