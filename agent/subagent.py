@@ -7,7 +7,7 @@ from tools import GetToolRegistery
 
 tool_registery = GetToolRegistery()
 tools = list(tool_registery.values())
-def get_subagent(system_prompt: str):
+def create_sub_agent(system_prompt: str):
     return create_agent(
         model=create_chat_model(),
         tools=tools,

@@ -1,18 +1,24 @@
 import os
 import re
 from pathlib import Path
+from dotenv import load_dotenv
 
 from .skill import Skill
 
-_skills_path = Path(os.environ.get("SKILL_PATH") or './skills')
+load_dotenv()
+
+
+_skills_path = Path(os.environ.get("SKILL_PATH") or './skills').expanduser()
 
 
 def load_skill():
+
     skills: list[Skill] = []
     if not _skills_path.exists() or not _skills_path.is_dir():
         return skills
 
     for path in _skills_path.iterdir():
+
         if not path.is_dir():
             continue
 

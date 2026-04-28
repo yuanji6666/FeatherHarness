@@ -11,4 +11,4 @@ def get_summarization_middleware():
             ("fraction", 0.5)
         ],
         keep=('messages', 10)
-    )
+)
